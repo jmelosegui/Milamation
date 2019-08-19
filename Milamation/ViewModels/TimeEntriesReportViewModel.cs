@@ -6,9 +6,11 @@ using Milamation.Models;
 using Milamation.ValidationRules;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.IO.IsolatedStorage;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 using System.Windows;
 
@@ -21,8 +23,7 @@ namespace Milamation.ViewModels
         private Client selectedClient;
         private DateTime? startDate;
         private DateTime? endDate;
-        private List<Rule> rules;
-        
+        private List<Rule> rules;        
         public TimeEntriesReportViewModel(string token, int accountId)
         {
             harvestClient = new HarvestRestClient(token, accountId);
@@ -34,18 +35,19 @@ namespace Milamation.ViewModels
             this.rules = new List<Rule>
             {
                 new IsMeetingRule()
-            };
+            };            
         }
 
         public BindableCollection<Client> Clients { get; }
 
         public BindableCollection<ProjectModel> Projects { get; }
 
-        public Version Version
+        public string Version
         {
             get
             {
-                return typeof(TimeEntriesReportViewModel).Assembly.GetName().Version;
+                FileVersionInfo fv = FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location);
+                return fv.FileVersion.ToString();
             }
         }
 

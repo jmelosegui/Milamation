@@ -10,6 +10,10 @@
   <ItemGroup>
     <PackageReference Include="Caliburn.Micro" Version="3.2.0" />
     <PackageReference Include="ClosedXML" Version="0.94.2" />
+    <PackageReference Include="Nerdbank.GitVersioning">
+      <Version>3.0.25</Version>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
   </ItemGroup>
 
   <ItemGroup>
