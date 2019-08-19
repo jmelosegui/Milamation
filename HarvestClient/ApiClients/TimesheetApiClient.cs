@@ -24,7 +24,7 @@ namespace HarvestClient.ApiClients
                             .Add("to", endDate?.ToString("yyyy-MM-dd"), () => endDate.HasValue)
                             .Add("page", currentPage); ;
 
-            var collection = await ProcessRequest<TimeEntriesCollection>("time_entries", Method.GET, parameters);
+            var collection = await ProcessRequest<TimeEntryCollection>("time_entries", Method.GET, parameters);
 
             while (collection.TotalPages >= currentPage)
             {
@@ -34,7 +34,7 @@ namespace HarvestClient.ApiClients
                 }
 
                 parameters["page"] = ++currentPage;
-                collection = await ProcessRequest<TimeEntriesCollection>("time_entries", Method.GET, parameters);
+                collection = await ProcessRequest<TimeEntryCollection>("time_entries", Method.GET, parameters);
             }
         }
     }

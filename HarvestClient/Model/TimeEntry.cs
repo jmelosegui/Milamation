@@ -20,8 +20,9 @@ namespace HarvestClient.Model
 
         [JsonProperty("billable")]
         public bool Billable { get; internal set; }
-
-        public IdName Project { get; internal set; }
+                
+        [JsonProperty("project")]
+        public Project Project { get; internal set; }
 
         public IdName User { get; set; }
 

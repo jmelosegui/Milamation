@@ -3,9 +3,9 @@ using System.Collections.Generic;
 
 namespace HarvestClient.Model
 {
-    public class TimeEntriesCollection : CollectionResponse
+    public class TimeEntryCollection : CollectionResponse
     {
-        public TimeEntriesCollection()
+        public TimeEntryCollection()
         {
             TimeEntries = new List<TimesheetEntry>();
         }

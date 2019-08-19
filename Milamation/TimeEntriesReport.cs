@@ -39,7 +39,7 @@ namespace Milamation
             foreach (var item in entries)
             {
                 worksheet.Cell($"A{i}").Value = item.SpentDate;
-                worksheet.Cell($"B{i}").Value = item.Project?.Name;
+                worksheet.Cell($"B{i}").Value = $"[{item.Project?.Code}] {item.Project?.Name}";
                 worksheet.Cell($"C{i}").Value = item.Task?.Name;
                 worksheet.Cell($"D{i}").Value = item.PBI;
                 //worksheet.Cell($"D{i}").FormulaA1 = $"=IF(ISNUMBER(SEARCH(\"planning\",C{i})),\"Planning\",IF(ISNUMBER(SEARCH(\"Scrum\",F{i})), \"Scrum\", LEFT(F{i},6)))";
