@@ -39,6 +39,8 @@
 
             <!--Row 5-->
             <Button Name="SignIn" Content="SignIn" Grid.Column="3" Grid.Row="6" HorizontalAlignment="Left" Width="62"/>
+
+            <Label Name="Version" Grid.Row="7" Grid.Column="3" Grid.ColumnSpan="2"  HorizontalAlignment="Right" VerticalAlignment="Bottom" />
         </Grid>
     </busyIndicator:BusyIndicator>
 </UserControl>

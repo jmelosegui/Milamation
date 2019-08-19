@@ -1,8 +1,10 @@
 ﻿using Caliburn.Micro;
 using HarvestClient;
 using HarvestClient.Model;
+using System.Diagnostics;
 using System.IO;
 using System.IO.IsolatedStorage;
+using System.Reflection;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Windows;
 
@@ -30,6 +32,15 @@ namespace Milamation.ViewModels
             {
                 accountId = value;
                 NotifyOfPropertyChange(() => AccountId);
+            }
+        }
+
+        public string Version
+        {
+            get
+            {
+                FileVersionInfo fv = FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location);
+                return fv.FileVersion.ToString();
             }
         }
 
