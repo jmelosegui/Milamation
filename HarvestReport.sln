@@ -5,7 +5,14 @@ VisualStudioVersion = 16.0.29025.244
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HarvestClient", "HarvestClient\HarvestClient.csproj", "{C42ADCEF-53D2-45E5-9B47-342E36BB2011}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Milamation", "Milamation\Milamation.csproj", "{B7910DBF-9810-4252-BA25-EFD6689F3BB0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Milamation", "Milamation\Milamation.csproj", "{B7910DBF-9810-4252-BA25-EFD6689F3BB0}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SolutionItems", "SolutionItems", "{AF80E61A-12F2-42D7-9139-EDB214229AD7}"
+	ProjectSection(SolutionItems) = preProject
+		.gitignore = .gitignore
+		Directory.Build.props = Directory.Build.props
+		version.json = version.json
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

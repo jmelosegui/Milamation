@@ -49,8 +49,8 @@
                 </ListBox.ItemContainerStyle>
             </ListBox>
             <Button Name="Logout" Grid.Column="1" Grid.Row="8" Content="Logout" Height="25" Width="70" HorizontalAlignment="Left"/>
-            <Button Name="ExportTimeEntries" Grid.Column="4" Grid.Row="8" Content="Export Time Entries" Height="25" Width="134" HorizontalAlignment="Right"/>
-
+            <Button Name="ExportTimeEntries" Grid.Column="2" Grid.Row="8" Margin="5" Content="Export Time Entries" Height="25" Width="134" HorizontalAlignment="Left"/>
+            <Label Name="Version" Grid.Column="4" Grid.Row="8" HorizontalAlignment="Right" />
         </Grid>
     </busyIndicator:BusyIndicator>
 </UserControl>

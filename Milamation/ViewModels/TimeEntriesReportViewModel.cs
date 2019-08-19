@@ -41,6 +41,14 @@ namespace Milamation.ViewModels
 
         public BindableCollection<ProjectModel> Projects { get; }
 
+        public Version Version
+        {
+            get
+            {
+                return typeof(TimeEntriesReportViewModel).Assembly.GetName().Version;
+            }
+        }
+
         public DateTime? StartDate
         {
             get
