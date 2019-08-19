@@ -3,8 +3,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.29025.244
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HarvestReport.Console", "HarvestReport\HarvestReport.Console.csproj", "{B2087943-A802-41C9-AC0F-377A543D1453}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HarvestClient", "HarvestClient\HarvestClient.csproj", "{C42ADCEF-53D2-45E5-9B47-342E36BB2011}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Milamation", "Milamation\Milamation.csproj", "{B7910DBF-9810-4252-BA25-EFD6689F3BB0}"
@@ -15,10 +13,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{B2087943-A802-41C9-AC0F-377A543D1453}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{B2087943-A802-41C9-AC0F-377A543D1453}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{B2087943-A802-41C9-AC0F-377A543D1453}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{B2087943-A802-41C9-AC0F-377A543D1453}.Release|Any CPU.Build.0 = Release|Any CPU
 		{C42ADCEF-53D2-45E5-9B47-342E36BB2011}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{C42ADCEF-53D2-45E5-9B47-342E36BB2011}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C42ADCEF-53D2-45E5-9B47-342E36BB2011}.Release|Any CPU.ActiveCfg = Release|Any CPU
