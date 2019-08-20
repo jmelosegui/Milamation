@@ -2,10 +2,9 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:Milamation.Views"
-             xmlns:busyIndicator="clr-namespace:Milamation.Controls.BusyIndicator"
-             mc:Ignorable="d">
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"        
+         xmlns:busyIndicator="clr-namespace:Milamation.Controls.BusyIndicator"
+         mc:Ignorable="d">
     <busyIndicator:BusyIndicator x:Name="BusyIndicator" Style="{DynamicResource BusyIndicator}" IsBusy="{Binding IsBusy}">
         <Grid>
             <Grid.ColumnDefinitions>
@@ -40,6 +39,12 @@
             <!--Row 5-->
             <Button Name="SignIn" Content="SignIn" Grid.Column="3" Grid.Row="6" HorizontalAlignment="Left" Width="62"/>
 
+            <ContentControl Grid.Row="7" Grid.Column="1" Grid.ColumnSpan="3"
+                            HorizontalAlignment="Left" VerticalAlignment="Bottom">
+                <Hyperlink NavigateUri="https://id.getharvest.com/developers" RequestNavigate="Hyperlink_RequestNavigate">
+                    Click here to obtain an access token                   
+                </Hyperlink>                
+            </ContentControl>
             <Label Name="Version" Grid.Row="7" Grid.Column="3" Grid.ColumnSpan="2"  HorizontalAlignment="Right" VerticalAlignment="Bottom" />
         </Grid>
     </busyIndicator:BusyIndicator>
