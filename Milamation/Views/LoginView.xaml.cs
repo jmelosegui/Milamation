@@ -1,5 +1,4 @@
-﻿using System.Diagnostics;
-using System.Windows.Controls;
+﻿using System.Windows.Controls;
 
 namespace Milamation.Views
 {
@@ -12,14 +11,5 @@ namespace Milamation.Views
         {
             InitializeComponent();
         }
-
-        private void Hyperlink_RequestNavigate(object sender, System.Windows.Navigation.RequestNavigateEventArgs e)
-        {
-            Process myProcess = new Process();
-            myProcess.StartInfo.UseShellExecute = true;
-            myProcess.StartInfo.FileName = e.Uri.AbsoluteUri;
-            myProcess.Start();
-        }
-
     }
 }

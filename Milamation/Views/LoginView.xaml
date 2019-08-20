@@ -5,6 +5,20 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"        
          xmlns:busyIndicator="clr-namespace:Milamation.Controls.BusyIndicator"
          mc:Ignorable="d">
+    <UserControl.Resources>
+        <Style TargetType="Button" x:Key="HyperlinkStyledButton">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <TextBlock Foreground="Blue"
+                   Text="{TemplateBinding Content}"
+                   TextDecorations="Underline" 
+                   Cursor="Hand" />
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </UserControl.Resources>
     <busyIndicator:BusyIndicator x:Name="BusyIndicator" Style="{DynamicResource BusyIndicator}" IsBusy="{Binding IsBusy}">
         <Grid>
             <Grid.ColumnDefinitions>
@@ -39,12 +53,10 @@
             <!--Row 5-->
             <Button Name="SignIn" Content="SignIn" Grid.Column="3" Grid.Row="6" HorizontalAlignment="Left" Width="62"/>
 
-            <ContentControl Grid.Row="7" Grid.Column="1" Grid.ColumnSpan="3"
-                            HorizontalAlignment="Left" VerticalAlignment="Bottom">
-                <Hyperlink NavigateUri="https://id.getharvest.com/developers" RequestNavigate="Hyperlink_RequestNavigate">
-                    Click here to obtain an access token                   
-                </Hyperlink>                
-            </ContentControl>
+            <Button Name="NavigateToHarvest" Content="Click here to obtain an access token" 
+                    Grid.Row="7" Grid.Column="1" Grid.ColumnSpan="3"
+                    HorizontalAlignment="Left" VerticalAlignment="Bottom"
+                    Style="{StaticResource HyperlinkStyledButton}"/>
             <Label Name="Version" Grid.Row="7" Grid.Column="3" Grid.ColumnSpan="2"  HorizontalAlignment="Right" VerticalAlignment="Bottom" />
         </Grid>
     </busyIndicator:BusyIndicator>

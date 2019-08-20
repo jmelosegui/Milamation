@@ -44,6 +44,14 @@ namespace Milamation.ViewModels
             }
         }
 
+        public void NavigateToHarvest()
+        {
+            Process myProcess = new Process();
+            myProcess.StartInfo.UseShellExecute = true;
+            myProcess.StartInfo.FileName = "https://id.getharvest.com/developers";
+            myProcess.Start();
+        }
+
         protected override void OnInitialize()
         {
             var credentials = ReadFromFile();
