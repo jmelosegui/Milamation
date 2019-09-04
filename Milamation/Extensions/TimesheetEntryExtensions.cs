@@ -1,6 +1,7 @@
 ﻿using HarvestClient.Model;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text.RegularExpressions;
 
 namespace Milamation.Extensions
@@ -9,7 +10,7 @@ namespace Milamation.Extensions
     {
         public static  void ApplyValidationRules(this TimesheetEntry timesheetEntry, IEnumerable<Milamation.ValidationRules.Rule> rules)
         {
-            foreach (var rule in rules)
+            foreach (var rule in rules.OrderBy(i => i.Priority))
             {
                 string validationError = rule.Validate(timesheetEntry);
                 if (!string.IsNullOrEmpty(validationError))
@@ -65,6 +66,7 @@ namespace Milamation.Extensions
                     if (matches.Count > 0)
                     {
                         timesheetEntry.PBI = matches[0].Groups["PBI"].Value;
+                        timesheetEntry.HasPBI = true;
                     }
                 }                
             }

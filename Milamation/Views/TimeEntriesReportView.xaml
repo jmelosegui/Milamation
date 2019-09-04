@@ -36,7 +36,7 @@
             <Label Content="EndDate" Grid.Column="3" Grid.Row="3" HorizontalAlignment="Left" VerticalAlignment="Top"/>
             <DatePicker Name="EndDate" Grid.Column="4" Grid.Row="3"/>
             <Label Content="Projects" Grid.Column="1" Grid.Row="4" HorizontalAlignment="Left" VerticalAlignment="Top" />
-            <ListBox x:Name="Projects" Grid.Column="1" Grid.ColumnSpan="4" Grid.Row="6"  SelectionMode="Extended" ItemsSource="{Binding Projects, NotifyOnSourceUpdated=True}">
+            <ListBox x:Name="Projects" Grid.Column="1" Grid.ColumnSpan="4" Grid.Row="6"  SelectionMode="Extended" ItemsSource="{Binding Projects, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True}">
                 <ListBox.ItemTemplate>
                     <DataTemplate>
                         <Label Content="{Binding DisplayName}"/>

@@ -39,5 +39,8 @@ namespace HarvestClient.Model
 
         [NotMapped]
         public string UserRoles { get; set; }
+
+        [NotMapped]
+        public bool HasPBI { get; set; }
     }
 }

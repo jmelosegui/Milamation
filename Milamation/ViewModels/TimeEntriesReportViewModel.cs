@@ -23,7 +23,7 @@ namespace Milamation.ViewModels
         private Client selectedClient;
         private DateTime? startDate;
         private DateTime? endDate;
-        private List<Rule> rules;        
+        private List<Rule> rules;
         public TimeEntriesReportViewModel(string token, int accountId)
         {
             harvestClient = new HarvestRestClient(token, accountId);
@@ -32,10 +32,36 @@ namespace Milamation.ViewModels
             Clients = new BindableCollection<Client>();
             Projects = new BindableCollection<ProjectModel>();
 
+            Projects.CollectionChanged += Projects_CollectionChanged;
+
             this.rules = new List<Rule>
             {
-                new IsMeetingRule()
-            };            
+                new IsMeetingRule(),
+                new EmptyNotesRule(),
+                new NeedPBIRule(),
+                new RemoveWordsRule(),
+                new NoDescriptionRule(),
+                // new NeedProperTaskRule()
+            };
+        }
+
+        private void Projects_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+        {
+            if (e.NewItems != null)
+                foreach (ProjectModel project in e.NewItems)
+                    project.PropertyChanged += Project_PropertyChanged;
+
+            if (e.OldItems != null)
+                foreach (ProjectModel project in e.OldItems)
+                    project.PropertyChanged -= Project_PropertyChanged;
+        }
+
+        private void Project_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == "IsSelected")
+            {
+                NotifyOfPropertyChange(() => CanExportTimeEntries);
+            }
         }
 
         public BindableCollection<Client> Clients { get; }
@@ -79,17 +105,6 @@ namespace Milamation.ViewModels
             }
         }
 
-        BindableCollection<ProjectModel> selectedProjects = new BindableCollection<ProjectModel>();
-        public BindableCollection<ProjectModel> SelectedItems
-        {
-            get
-            {
-                selectedProjects.Clear();
-                selectedProjects.AddRange(Projects.Where(mo => mo.IsSelected));
-                return selectedProjects;
-            }
-        }
-
         public Client SelectedClient
         {
             get { return selectedClient; }
@@ -97,6 +112,7 @@ namespace Milamation.ViewModels
             {
                 selectedClient = value;
                 NotifyOfPropertyChange(() => SelectedClient);
+                NotifyOfPropertyChange(() => CanExportTimeEntries);
             }
         }
 
@@ -112,6 +128,14 @@ namespace Milamation.ViewModels
             }
         }
 
+        public bool CanExportTimeEntries
+        {
+            get
+            {
+                return selectedClient != null
+                        && Projects.Where(mo => mo.IsSelected).Any();
+            }
+        }
 
         public async void ExportTimeEntries()
         {
@@ -131,12 +155,11 @@ namespace Milamation.ViewModels
                     return;
                 }
                 throw;
-            }            
+            }
 
             var timeEntries = new List<TimesheetEntry>();
-
-            int row = 2;
-            foreach (var project in SelectedItems)
+                        
+            foreach (var project in Projects.Where(mo => mo.IsSelected))
             {
                 await foreach (var entry in harvestClient.Timesheets.List(selectedClient.Id, project.Id, StartDate, EndDate))
                 {
@@ -145,13 +168,12 @@ namespace Milamation.ViewModels
                     entry.RoundHours();
                     entry.ApplyValidationRules(rules);
                     timeEntries.Add(entry);
-                    row++;
                 }
 
-                TimeEntriesReport.AddEntries(timeEntries, 2);
+                TimeEntriesReport.AddEntries(timeEntries, 2 /*Asuming the header is present*/);
             }
 
-            TimeEntriesReport.FormatExcel(row);
+            TimeEntriesReport.FormatExcel(timeEntries.Count());
 
             TimeEntriesReport.OpenReport();
 
@@ -201,10 +223,13 @@ namespace Milamation.ViewModels
                 List<Project> tempList = new List<Project>();
                 await foreach (var item in harvestClient.Projects.List(selectedClient.Id, true))
                 {
-                    tempList.Add(item);
+                    tempList.Add(item);                    
                 }
 
-                Projects.AddRange(tempList.Select(i => (ProjectModel)i).OrderBy(i => i.Code));
+                foreach (var project in tempList.Select(i => new ProjectModel(i)).OrderBy(i => i.Code))
+                {
+                    Projects.Add(project);
+                }                
             }
             finally
             {

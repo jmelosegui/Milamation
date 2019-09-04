@@ -30,7 +30,7 @@ namespace Milamation
             workbook.SaveAs(FileName);
         }
 
-        public static int AddEntries(IEnumerable<TimesheetEntry> entries, int rowId)
+        public static int AddEntries(IEnumerable<TimesheetEntry> entries, int rowId = 1)
         {   
             var workbook = new XLWorkbook(FileName);
             var worksheet = workbook.Worksheets.Worksheet("Time Entries");
@@ -39,7 +39,7 @@ namespace Milamation
             foreach (var item in entries)
             {
                 worksheet.Cell($"A{i}").Value = item.SpentDate;
-                worksheet.Cell($"B{i}").Value = $"[{item.Project?.Code}] {item.Project?.Name}";
+                worksheet.Cell($"B{i}").Value = item.Project?.Name;
                 worksheet.Cell($"C{i}").Value = item.Task?.Name;
                 worksheet.Cell($"D{i}").Value = item.PBI;
                 //worksheet.Cell($"D{i}").FormulaA1 = $"=IF(ISNUMBER(SEARCH(\"planning\",C{i})),\"Planning\",IF(ISNUMBER(SEARCH(\"Scrum\",F{i})), \"Scrum\", LEFT(F{i},6)))";
@@ -65,14 +65,14 @@ namespace Milamation
             var worksheet = workbook.Worksheets.Worksheet("Time Entries");
 
             // Formatting headers            
-            var rngTable = worksheet.Range($"A1:K{rowNumber - 1}");
+            var rngTable = worksheet.Range($"A1:K{rowNumber + 1}");
             var rngHeaders = rngTable.Range("A1:K1");
             rngHeaders.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
             rngHeaders.Style.Font.Bold = true;
             rngHeaders.Style.Fill.BackgroundColor = XLColor.Black;
             rngHeaders.Style.Font.FontColor = XLColor.White;
 
-            worksheet.Range($"E2:E{rowNumber - 1}")
+            worksheet.Range($"E2:E{rowNumber + 1}")
                      .AddConditionalFormat()
                      .WhenNotBlank()
                      .Fill.SetBackgroundColor(XLColor.FromArgb(255, 199, 206))
