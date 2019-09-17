@@ -8,7 +8,7 @@ namespace Milamation.ValidationRules
 
         public override string Validate(TimesheetEntry timesheetEntry)
         {
-            if (string.IsNullOrEmpty(timesheetEntry.Notes.Trim()))
+            if (string.IsNullOrEmpty(timesheetEntry.Notes?.Trim()))
             {
                 return "Please enter description of work done + add PBI+Task if applicable";
             }
