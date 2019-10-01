@@ -220,6 +220,7 @@ namespace Milamation.ViewModels
 
             try
             {
+                Projects.Clear();
                 List<Project> tempList = new List<Project>();
                 await foreach (var item in harvestClient.Projects.List(selectedClient.Id, true))
                 {
@@ -239,9 +240,30 @@ namespace Milamation.ViewModels
 
         private async void InternalInitialize()
         {
-            var result = await harvestClient.Clients.GetById(32315 /*PwC Audit*/);
+            IsBusy = true;
 
-            Clients.Add(result);
+            try
+            {
+                var supportedClients = new int[] { 32315, 8090413 };
+
+                foreach (var clientId in supportedClients)
+                {
+                    Client client = await harvestClient.Clients.GetById(clientId /*PwC Audit*/);
+
+                    if (client != null)
+                    {
+                        Clients.Add(client); 
+                    }
+                }
+            }
+            catch
+            { 
+                //if cannot load the client just continue witth the rest.
+            }
+            finally
+            {
+                IsBusy = false;
+            }
         }
 
         private async Task<string> GetUserRoles(int userId)
