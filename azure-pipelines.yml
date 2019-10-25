@@ -5,12 +5,25 @@ pool:
   vmImage: 'windows-latest'
 
 variables:
+  solution: '$(Build.SourcesDirectory)/HarvestReport.sln'
   BuildConfiguration: 'Release'
   BuildPlatform: 'Any Cpu'
+  MSBuildPath: '"C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\MSBuild\Current\Bin"'
+
+steps:
+- task: NuGetToolInstaller@0
+  displayName: 'Use NuGet 5.2.0'
+  inputs:
+    versionSpec: 5.2.0
+
+- task: NuGetCommand@2
+  inputs:
+    command: custom    
+    arguments: 'restore  $(solution) -MSBuildPath $(MSBuildPath)'
 
 - task: VSBuild@1
   inputs:
-    solution: '**\*.sln'
+    solution: 
     msbuildArgs: '/t:Publish /p:OutDir=$(Build.ArtifactStagingDirectory)'
     platform: '$(BuildPlatform)'
     configuration: '$(BuildConfiguration)'
