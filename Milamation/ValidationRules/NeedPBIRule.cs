@@ -8,16 +8,16 @@ namespace Milamation.ValidationRules
     {
         public override int Priority => 1;
 
-        public List<string> TasksNotRequiringPBI => new List<string>()
-        {
-            { "Admin" },
-            { "Non-Billable Time" },
-            { "Non-Billable Onboarding" },
-            { "Onboarding" },
-            { "Meetings" },
-            { "Planning" },
-            { "Project Management" }
-        };
+        //public List<string> TasksNotRequiringPBI => new List<string>()
+        //{
+        //    { "Admin" },
+        //    { "Non-Billable Time" },
+        //    { "Non-Billable Onboarding" },
+        //    { "Onboarding" },
+        //    { "Meetings" },
+        //    { "Planning" },
+        //    { "Project Management" }
+        //};
 
         public List<string> TasksRequiringPBI => new List<string>()
         {
@@ -27,7 +27,7 @@ namespace Milamation.ValidationRules
             { "Work Review" }
         };
 
-        public List<string> PBIRequiredProject => new List<string>()
+        public List<string> ProjectsRequiringPBI => new List<string>()
         {
             { "Prism Apps" },
             { "Prism Platform" },
@@ -35,6 +35,7 @@ namespace Milamation.ValidationRules
             { "Audit360" },
             { "Prism DevOps" },
             { "Prism Visualizations" },
+            { "AWM Global Technology" },
         };
 
         public override string Validate(TimesheetEntry timesheetEntry)
@@ -42,9 +43,8 @@ namespace Milamation.ValidationRules
             if (timesheetEntry.Billable
                 && !timesheetEntry.HasPBI
                 && (
-                     !TasksNotRequiringPBI.Contains(timesheetEntry.Task?.Name)
-                     && PBIRequiredProject.Contains(timesheetEntry.Project?.Name)
-                     || TasksRequiringPBI.Contains(timesheetEntry.Task?.Name)
+                     TasksRequiringPBI.Contains(timesheetEntry.Task?.Name)
+                     && !ProjectsRequiringPBI.Contains(timesheetEntry.Project?.Name)
                   )
                 )
             {

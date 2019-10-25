@@ -25,12 +25,13 @@ namespace Milamation.ViewModels
         private readonly IHarvestRestClient harvestClient;
         private readonly IDictionary<int, User> userCache;
         private readonly IEnumerable<Rule> rules;
+        private readonly IPrincipal principal;
         private Client selectedClient;
         private DateTime? startDate;
         private DateTime? endDate;
-        
+
         public TimeEntriesReportViewModel(
-                IHarvestRestClientFactory harvestClientFactory, 
+                IHarvestRestClientFactory harvestClientFactory,
                 IEnumerable<Rule> rules,
                 IPrincipal principal,
                 ILogger<TimeEntriesReportViewModel> logger)
@@ -47,7 +48,7 @@ namespace Milamation.ViewModels
             string accountId = ((ClaimsPrincipal)principal).FindFirst("harvest:accountId").Value;
             harvestClient = harvestClientFactory.CreateHarvestRestClient(bearerToken, accountId);
             this.rules = rules ?? throw new ArgumentNullException(nameof(rules));
-
+            this.principal = principal;
             PropertyChanged += OnPropertyChange;
         }
 
@@ -111,6 +112,21 @@ namespace Milamation.ViewModels
             }
         }
 
+        private bool onlyMyEntries;
+
+        public bool OnlyMyEntries
+        {
+            get
+            {
+                return onlyMyEntries;
+            }
+
+            set
+            {
+                onlyMyEntries = value;
+                NotifyOfPropertyChange(() => OnlyMyEntries);
+            }
+        }
         public Client SelectedClient
         {
             get { return selectedClient; }
@@ -164,10 +180,16 @@ namespace Milamation.ViewModels
             }
 
             var timeEntries = new List<TimesheetEntry>();
-                        
+
             foreach (var project in Projects.Where(mo => mo.IsSelected))
             {
-                await foreach (var entry in harvestClient.Timesheets.List(selectedClient.Id, project.Id, StartDate, EndDate))
+                int? userId = null;
+                if (OnlyMyEntries && int.TryParse(((ClaimsPrincipal)principal).FindFirst("harvest:userId").Value, out int tempUserId))
+                {
+                    userId = tempUserId;
+                }
+
+                await foreach (var entry in harvestClient.Timesheets.ListAsync(selectedClient.Id, project.Id, StartDate, EndDate, userId))
                 {
                     entry.UserRoles = await GetUserRolesAsync(entry.User.Id);
                     entry.CompletePBIColumn();
@@ -212,19 +234,19 @@ namespace Milamation.ViewModels
             // Getting last week dates
             var dt = DateTime.Now;
             StartDate = dt.AddDays(-(int)dt.DayOfWeek - 6);
-            EndDate = dt.AddDays(-(int)dt.DayOfWeek - 2);            
+            EndDate = dt.AddDays(-(int)dt.DayOfWeek - 2);
         }
 
-        private void OnPropertyChange(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+        private async void OnPropertyChange(object sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
             switch (e.PropertyName)
             {
                 case nameof(SelectedClient):
-                    OnClientSelected();
+                    await OnClientSelected();
                     break;
                 // TODO: Remove this hack once I figure out how to always run the OnActivateAsync
                 case nameof(Parent):
-                    OnActivateAsync(CancellationToken.None);
+                    await OnActivateAsync(CancellationToken.None);
                     break;
             }
         }
@@ -239,13 +261,13 @@ namespace Milamation.ViewModels
                 List<Project> tempList = new List<Project>();
                 await foreach (var item in harvestClient.Projects.ListAsync(selectedClient.Id, true))
                 {
-                    tempList.Add(item);                    
+                    tempList.Add(item);
                 }
 
                 foreach (var project in tempList.Select(i => new ProjectModel(i)).OrderBy(i => i.Code))
                 {
                     Projects.Add(project);
-                }                
+                }
             }
             finally
             {
@@ -267,7 +289,7 @@ namespace Milamation.ViewModels
 
                     if (client != null)
                     {
-                        Clients.Add(client); 
+                        Clients.Add(client);
                     }
                 }
             }

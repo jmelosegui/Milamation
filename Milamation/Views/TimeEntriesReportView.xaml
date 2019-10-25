@@ -26,6 +26,8 @@
                 <RowDefinition Height="5"/>
                 <RowDefinition Height="auto"/>
                 <RowDefinition Height="20"/>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="20"/>
 
             </Grid.RowDefinitions>
 
@@ -48,9 +50,10 @@
                     </Style>
                 </ListBox.ItemContainerStyle>
             </ListBox>
-            <Button Name="Logout" Grid.Column="1" Grid.Row="8" Content="Logout" Height="25" Width="70" HorizontalAlignment="Left"/>
-            <Button Name="ExportTimeEntries" Grid.Column="2" Grid.Row="8" Margin="5" Content="Export Time Entries" Height="25" Width="134" HorizontalAlignment="Left"/>
-            <Label Name="Version" Grid.Column="4" Grid.Row="8" HorizontalAlignment="Right" />
+            <CheckBox x:Name="OnlyMyEntries" Grid.Column="1" Grid.ColumnSpan="3" Grid.Row="9" Content="Export only my entries" />
+            <Button Name="Logout" Grid.Column="1" Grid.Row="10" Content="Logout" Height="25" Width="70" HorizontalAlignment="Left"/>
+            <Button Name="ExportTimeEntries" Grid.Column="2" Grid.Row="10" Margin="5" Content="Export Time Entries" Height="25" Width="134" HorizontalAlignment="Left"/>
+            <Label Name="Version" Grid.Column="4" Grid.Row="10" HorizontalAlignment="Right" />
         </Grid>
     </busyIndicator:BusyIndicator>
 </UserControl>
