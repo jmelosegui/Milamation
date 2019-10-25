@@ -2,11 +2,13 @@ trigger:
 - master
 
 pool:
-  vmImage: 'ubuntu-latest'
+  vmImage: 'windows-latest'
 
 variables:
-  buildConfiguration: 'Release'
+  BuildConfiguration: 'Release'
+  BuildPlatform: 'Any Cpu'
 
 steps:
-- script: dotnet build --configuration $(buildConfiguration)
-  displayName: 'dotnet build $(buildConfiguration)'
+- displayName: 'Build Solution'
+  script: msbuild /t:Publish /p:Configuration=$(BuildConfiguration) /p:$(BuildPlatform) /p:OutDir=$(Build.ArtifactStagingDirectory)
+  
