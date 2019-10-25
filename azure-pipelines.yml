@@ -8,7 +8,9 @@ variables:
   BuildConfiguration: 'Release'
   BuildPlatform: 'Any Cpu'
 
-steps:
-- displayName: 'Build Solution'
-  script: msbuild /t:Publish /p:Configuration=$(BuildConfiguration) /p:$(BuildPlatform) /p:OutDir=$(Build.ArtifactStagingDirectory)
-  
+- task: VSBuild@1
+  inputs:
+    solution: '**\*.sln'
+    msbuildArgs: '/t:Publish /p:OutDir=$(Build.ArtifactStagingDirectory)'
+    platform: '$(BuildPlatform)'
+    configuration: '$(BuildConfiguration)'
