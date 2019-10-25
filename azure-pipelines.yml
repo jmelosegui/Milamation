@@ -18,8 +18,10 @@ steps:
 
 - task: NuGetCommand@2
   inputs:
-    command: custom    
-    arguments: 'restore  $(solution) -MSBuildPath $(MSBuildPath)'
+    command: 'restore'
+    restoreSolution: '$(solution)'
+    feedsToUse: 'config'
+    nugetConfigPath: '$(Build.SourcesDirectory)/nuget.config'    
 
 - task: VSBuild@1
   inputs:
