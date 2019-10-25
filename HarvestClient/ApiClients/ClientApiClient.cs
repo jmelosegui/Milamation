@@ -8,7 +8,7 @@ namespace HarvestClient.ApiClients
 {
     public class ClientApiClient : BaseApiClient
     {
-        public ClientApiClient(string bearerToken, int accountId)
+        public ClientApiClient(string bearerToken, string accountId)
             : base(bearerToken, accountId)
         {
         }

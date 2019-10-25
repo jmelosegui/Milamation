@@ -7,12 +7,12 @@ namespace HarvestClient.ApiClients
 {
     public class ProjectApiClient : BaseApiClient
     {
-        public ProjectApiClient(string bearerToken, int accountId) 
+        public ProjectApiClient(string bearerToken, string accountId) 
             : base(bearerToken, accountId)
         {
         }
 
-        public async IAsyncEnumerable<Project> List(int? clientId = null, bool? isActive = true)
+        public async IAsyncEnumerable<Project> ListAsync(int? clientId = null, bool? isActive = true)
         {
             Dictionary<string, object> parameters = new Dictionary<string, object>();
             int currentPage = 1;

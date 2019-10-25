@@ -12,7 +12,7 @@ namespace HarvestClient.ApiClients
     {
         protected const string BaseUrl = "https://api.harvestapp.com/api/v2/";
         protected readonly string bearerToken;
-        protected readonly int accountId;
+        protected readonly string accountId;
         protected readonly JsonHttpPipeline jsonPipeline;
 
         private static readonly Dictionary<HttpStatusCode, Func<IRestResponse, Exception>> HttpExceptionMap =
@@ -23,7 +23,7 @@ namespace HarvestClient.ApiClients
                 { HttpStatusCode.NotFound, response => new NotFoundException(response) }
             };
 
-        public BaseApiClient(string bearerToken, int accountId)
+        public BaseApiClient(string bearerToken, string accountId)
         {
             this.bearerToken = bearerToken ?? throw new ArgumentNullException(nameof(bearerToken));
             this.accountId = accountId;

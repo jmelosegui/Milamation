@@ -1,6 +1,7 @@
 ﻿using Caliburn.Micro;
 using HarvestClient;
 using HarvestClient.Model;
+using Microsoft.Extensions.Logging;
 using Milamation.Extensions;
 using Milamation.Models;
 using Milamation.ValidationRules;
@@ -11,38 +12,43 @@ using System.IO;
 using System.IO.IsolatedStorage;
 using System.Linq;
 using System.Reflection;
+using System.Security.Claims;
+using System.Security.Principal;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 
 namespace Milamation.ViewModels
 {
-    public class TimeEntriesReportViewModel : Screen
+    public class TimeEntriesReportViewModel : ViewModelBase<TimeEntriesReportViewModel>
     {
-        private readonly HarvestRestClient harvestClient;
+        private readonly IHarvestRestClient harvestClient;
         private readonly IDictionary<int, User> userCache;
+        private readonly IEnumerable<Rule> rules;
         private Client selectedClient;
         private DateTime? startDate;
         private DateTime? endDate;
-        private List<Rule> rules;
-        public TimeEntriesReportViewModel(string token, int accountId)
+        
+        public TimeEntriesReportViewModel(
+                IHarvestRestClientFactory harvestClientFactory, 
+                IEnumerable<Rule> rules,
+                IPrincipal principal,
+                ILogger<TimeEntriesReportViewModel> logger)
+            : base(logger)
         {
-            harvestClient = new HarvestRestClient(token, accountId);
+            //harvestClient = new HarvestRestClient(token, accountId);
             userCache = new Dictionary<int, User>();
 
             Clients = new BindableCollection<Client>();
             Projects = new BindableCollection<ProjectModel>();
 
             Projects.CollectionChanged += Projects_CollectionChanged;
+            string bearerToken = ((ClaimsPrincipal)principal).FindFirst("harvest:token").Value;
+            string accountId = ((ClaimsPrincipal)principal).FindFirst("harvest:accountId").Value;
+            harvestClient = harvestClientFactory.CreateHarvestRestClient(bearerToken, accountId);
+            this.rules = rules ?? throw new ArgumentNullException(nameof(rules));
 
-            this.rules = new List<Rule>
-            {
-                new IsMeetingRule(),
-                new EmptyNotesRule(),
-                new NeedPBIRule(),
-                new RemoveWordsRule(),
-                new NoDescriptionRule(),
-                // new NeedProperTaskRule()
-            };
+            PropertyChanged += OnPropertyChange;
         }
 
         private void Projects_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
@@ -163,7 +169,7 @@ namespace Milamation.ViewModels
             {
                 await foreach (var entry in harvestClient.Timesheets.List(selectedClient.Id, project.Id, StartDate, EndDate))
                 {
-                    entry.UserRoles = await GetUserRoles(entry.User.Id);
+                    entry.UserRoles = await GetUserRolesAsync(entry.User.Id);
                     entry.CompletePBIColumn();
                     entry.RoundHours();
                     entry.ApplyValidationRules(rules);
@@ -192,16 +198,21 @@ namespace Milamation.ViewModels
             }
         }
 
-        protected override void OnInitialize()
+        protected async override Task OnActivateAsync(CancellationToken cancellationToken)
         {
-            base.OnInitialize();
-            PropertyChanged += OnPropertyChange; ;
-            InternalInitialize();
+            if (this.IsInitialized)
+            {
+                return;
+            }
+
+            await base.OnActivateAsync(cancellationToken);
+
+            await InternalInitialize();
 
             // Getting last week dates
             var dt = DateTime.Now;
             StartDate = dt.AddDays(-(int)dt.DayOfWeek - 6);
-            EndDate = dt.AddDays(-(int)dt.DayOfWeek - 2);
+            EndDate = dt.AddDays(-(int)dt.DayOfWeek - 2);            
         }
 
         private void OnPropertyChange(object sender, System.ComponentModel.PropertyChangedEventArgs e)
@@ -211,10 +222,14 @@ namespace Milamation.ViewModels
                 case nameof(SelectedClient):
                     OnClientSelected();
                     break;
+                // TODO: Remove this hack once I figure out how to always run the OnActivateAsync
+                case nameof(Parent):
+                    OnActivateAsync(CancellationToken.None);
+                    break;
             }
         }
 
-        private async void OnClientSelected()
+        private async Task OnClientSelected()
         {
             IsBusy = true;
 
@@ -222,7 +237,7 @@ namespace Milamation.ViewModels
             {
                 Projects.Clear();
                 List<Project> tempList = new List<Project>();
-                await foreach (var item in harvestClient.Projects.List(selectedClient.Id, true))
+                await foreach (var item in harvestClient.Projects.ListAsync(selectedClient.Id, true))
                 {
                     tempList.Add(item);                    
                 }
@@ -238,7 +253,7 @@ namespace Milamation.ViewModels
             }
         }
 
-        private async void InternalInitialize()
+        private async Task InternalInitialize()
         {
             IsBusy = true;
 
@@ -256,23 +271,19 @@ namespace Milamation.ViewModels
                     }
                 }
             }
-            catch
-            { 
-                //if cannot load the client just continue witth the rest.
-            }
             finally
             {
                 IsBusy = false;
             }
         }
 
-        private async Task<string> GetUserRoles(int userId)
+        private async Task<string> GetUserRolesAsync(int userId)
         {
             User result;
 
             if (!userCache.TryGetValue(userId, out result))
             {
-                result = await harvestClient.Users.GetUserById(userId);
+                result = await harvestClient.Users.GetUserByIdAsync(userId);
 
                 userCache.Add(userId, result);
             }

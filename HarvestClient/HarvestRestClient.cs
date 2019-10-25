@@ -3,9 +3,9 @@ using HarvestClient.ApiClients;
 
 namespace HarvestClient
 {
-    public class HarvestRestClient
+    public class HarvestRestClient : IHarvestRestClient
     {
-        public HarvestRestClient(string bearerToken, int accountId)
+        public HarvestRestClient(string bearerToken, string accountId)
         {
             if (bearerToken == null)
             {

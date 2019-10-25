@@ -8,7 +8,7 @@ namespace HarvestClient.ApiClients
 {
     public class TimesheetApiClient : BaseApiClient
     {
-        public TimesheetApiClient(string bearerToken, int accountId) 
+        public TimesheetApiClient(string bearerToken, string accountId) 
             : base(bearerToken, accountId)
         {
         }

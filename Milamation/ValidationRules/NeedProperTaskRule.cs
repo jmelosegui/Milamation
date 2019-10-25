@@ -8,6 +8,9 @@ namespace Milamation.ValidationRules
     {
         public override int Priority => 1;
 
+        // TODO: This rule is not in use now I need to review this to enable or delete.
+        public override bool IsEnabled => false;
+
         public List<string> TasksNotRequiringPBI => new List<string>()
         {
             { "Admin" },

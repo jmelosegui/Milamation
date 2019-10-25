@@ -1,19 +1,35 @@
 ﻿using Caliburn.Micro;
 using HarvestClient;
 using HarvestClient.Model;
+using Microsoft.Extensions.Logging;
+using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.IO.IsolatedStorage;
 using System.Reflection;
 using System.Runtime.Serialization.Formatters.Binary;
+using System.Security.Claims;
+using System.Security.Principal;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 
 namespace Milamation.ViewModels
 {
-    public class LoginViewModel : Screen
+    public class LoginViewModel : ViewModelBase<LoginViewModel>
     {
-        private string token;
+        private readonly IHarvestRestClientFactory factory;
+        private IPrincipal principal;
 
+        public LoginViewModel(IHarvestRestClientFactory factory, ILogger<LoginViewModel> logger, IPrincipal principal)
+            : base(logger)
+        {
+            this.factory = factory ?? throw new ArgumentNullException(nameof(factory));
+            this.principal = principal;
+        }
+
+        private string token;
         public string Token
         {
             get { return token; }
@@ -24,8 +40,8 @@ namespace Milamation.ViewModels
             }
         }
 
-        private int? accountId;
-        public int? AccountId
+        private string accountId;
+        public string AccountId
         {
             get { return accountId; }
             set
@@ -52,56 +68,60 @@ namespace Milamation.ViewModels
             myProcess.Start();
         }
 
-        protected override void OnInitialize()
+        protected async override Task OnInitializeAsync(CancellationToken cancellationToken)
         {
             var credentials = ReadFromFile();
 
             if (credentials != null)
             {
                 int indexToken = credentials.IndexOf("#!#");
-                if (int.TryParse(credentials.Substring(0, indexToken), out int aId))
-                {
-                    AccountId = aId;
-                }
+                AccountId = credentials.Substring(0, indexToken);
 
                 Token = credentials.Substring(indexToken + 3);
 
-                if (AccountId.HasValue && CanSignIn(AccountId.Value, Token))
+                if (AccountId != null && CanSignIn(AccountId, Token))
                 {
-                    SignIn(AccountId.Value, Token);
+                    await SignIn(AccountId, Token, cancellationToken);
                 }
             }
         }
 
-        public bool CanSignIn(int accountId, string token)
+        public bool CanSignIn(string accountId, string token)
         {
-            return !string.IsNullOrEmpty(token) && accountId > 0;
+            return !string.IsNullOrEmpty(token) && !string.IsNullOrEmpty(accountId);
         }
 
-        public async void SignIn(int accountId, string token)
+        public async Task SignIn(string accountId, string token, CancellationToken cancellationToken)
         {
-            HarvestRestClient harvestClient = new HarvestRestClient(token, accountId);
-
-            User user = null;
+            IHarvestRestClient harvestClient = factory.CreateHarvestRestClient(token, accountId);
 
             try
             {
-                user = await harvestClient.Users.GetCurrent();
+                User user = await harvestClient.Users.GetCurrentAsync();
+                SetPrincipal(user);
+                WriteToFile($"{accountId}#!#{token}");
+                await NavigateToAsync<TimeEntriesReportViewModel>(cancellationToken);
             }
             catch (System.Exception)
             {
                 MessageBox.Show("Wrong Account Id or Token");
             }
+        }
 
-            if (user != null)
+        private void SetPrincipal(User user)
+        {
+            IEnumerable<Claim> claims = new List<Claim>()
             {
-                WriteToFile($"{accountId}#!#{token}");
-                var shell = Parent as ShellViewModel;
-                if (shell != null)
-                {   
-                    shell.ActivateItem(new TimeEntriesReportViewModel(token, accountId));
-                }
-            }
+                new Claim("name", principal.Identity.Name),
+                new Claim("harvest:accountId", accountId),
+                new Claim("harvest:token", token),
+                new Claim("harvest:userId", user.Id.ToString()),
+            };
+
+            ClaimsIdentity claimIdentity = new ClaimsIdentity(principal.Identity, claims);
+
+            ((WindowsPrincipal)this.principal).AddIdentity(claimIdentity);
+            
         }
 
         private static string ReadFromFile()
@@ -117,7 +137,7 @@ namespace Milamation.ViewModels
             }
             catch
             {
-                //Si no puedo leer del fichero sigo adelante
+                //If cannot read the file just continue
                 return null;
             }
         }
@@ -134,7 +154,8 @@ namespace Milamation.ViewModels
                 }
             }
             catch
-            {                
+            {
+                //If cannot write the file just continue
             }
         }
     }

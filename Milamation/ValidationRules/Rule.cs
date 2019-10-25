@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using HarvestClient.Model;
+﻿using HarvestClient.Model;
 
 namespace Milamation.ValidationRules
 {
@@ -10,6 +7,8 @@ namespace Milamation.ValidationRules
         public abstract int Priority { get; }
 
         public abstract string Validate(TimesheetEntry timesheetEntry);
+
+        public virtual bool IsEnabled => true;
         
     }
 }
