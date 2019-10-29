@@ -9,6 +9,7 @@ using Milamation.ViewModels;
 using Milamation.ValidationRules;
 using HarvestClient;
 using System.Security.Principal;
+using NLog.Extensions.Logging;
 
 namespace Milamation
 {
@@ -67,6 +68,7 @@ namespace Milamation
 
             services.AddSingleton(settings);
             services.AddSingleton<ILoggerFactory, LoggerFactory>();
+            services.AddSingleton<IAppUpdater, WinAppUpdater>();
             services.AddTransient(typeof(ILogger<>), typeof(Logger<>));
             services.AddTransient<IHarvestRestClientFactory, HarvestRestClientFactory>();
             services.AddTransient<IHarvestRestClient, HarvestRestClient>();
@@ -79,18 +81,18 @@ namespace Milamation
             var principal = new WindowsPrincipal(WindowsIdentity.GetCurrent());
             services.AddSingleton<IPrincipal>(principal);
 
-            // TODO: Add NLog
-            //services.AddLogging(loggingBuilder =>
-            //{
-            //    loggingBuilder.ClearProviders();
+            //TODO: Add NLog
+            services.AddLogging(loggingBuilder =>
+            {
+                loggingBuilder.ClearProviders();
 
-            //    loggingBuilder.SetMinimumLevel(Microsoft.Extensions.Logging.LogLevel.Trace);
-            //    loggingBuilder.AddNLog(new NLogProviderOptions
-            //    {
-            //        CaptureMessageProperties = true,
-            //        CaptureMessageTemplates = true
-            //    });
-            //});
+                loggingBuilder.SetMinimumLevel(LogLevel.Trace);
+                loggingBuilder.AddNLog(new NLogProviderOptions
+                {
+                    CaptureMessageProperties = true,
+                    CaptureMessageTemplates = true
+                });
+            });
 
             return services.BuildServiceProvider();
         }
