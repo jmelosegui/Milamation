@@ -11,7 +11,7 @@ namespace Milamation
     public class WinAppUpdater : IAppUpdater
     {
         private readonly ILogger<WinAppUpdater> logger;
-        private const string UpdateUrl = "https://github.com/jmelosegui/milamation/releases/latest/";
+        private const string UpdateUrl = "https://github.com/jmelosegui/milamation/releases/latest/download/";
         private readonly string updateExe;
         public WinAppUpdater(ILogger<WinAppUpdater> logger)
         {
