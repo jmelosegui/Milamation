@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+  <metadata>
+    <id>Milamation</id>
+    <version>$version$</version>
+    <title>Milamation</title>
+    <authors>Juan Elosegui</authors>
+    <owners>Juan Elosegui</owners>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>Tool to generate a report to validate time entry rules from harvest</description>
+  </metadata>
+  <files>    
+    <file src=".\**\*.dll" target="lib\netcoreapp3.0\" />
+    <file src=".\**\*.exe" target="lib\netcoreapp3.0\" />
+    <file src=".\**\*.xml" target="lib\netcoreapp3.0\" />
+  </files>
+</package>

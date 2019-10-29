@@ -70,6 +70,7 @@ namespace Milamation.ViewModels
 
         protected async override Task OnInitializeAsync(CancellationToken cancellationToken)
         {
+            logger.LogDebug("Initializing viewmodel");
             var credentials = ReadFromFile();
 
             if (credentials != null)
