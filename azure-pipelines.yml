@@ -23,6 +23,16 @@ steps:
     feedsToUse: 'config'
     nugetConfigPath: '$(Build.SourcesDirectory)/nuget.config'    
   
+- task: DotNetCoreCLI@2  
+  inputs:
+    command: custom
+    custom: tool
+    arguments: install --tool-path . nbgv
+  displayName: Install NBGV tool
+
+- script: nbgv cloud
+  displayName: Set Version
+
 - task: VSBuild@1
   displayName: 'Build Solution'
   inputs:
@@ -31,14 +41,15 @@ steps:
     platform: '$(BuildPlatform)'
     configuration: '$(BuildConfiguration)'
 
-- task: NuGetCommand@2
-  displayName: 'Create Nuget Package'
+- task: PowerShell@2
   inputs:
-    command: 'pack'
-    packagesToPack: '$(Build.BinariesDirectory)/Milamation.nuspec'
-    versioningScheme: 'byEnvVar'
-    versionEnvVar: '$(NBGV_NuGetPackageVersion)'
-
+    targetType: 'inline'
+    script:
+        $version = .\nbgv get-version -f json | ConvertFrom-Json
+        $nuspecs = gci .\NuSpecs\*.nuspec         
+        nuget.exe pack $(Build.BinariesDirectory)\Milamation.nuspec -NonInteractive -OutputDirectory $(Build.ArtifactStagingDirectory) -Version $($version.NuGetPackageVersion) -Properties Configuration=Release -Verbosity Detailed        
+        Write-Host "##vso[task.setvariable variable=NBGV_NuGetPackageVersion;]$($version.NuGetPackageVersion)"
+        
 - task: CmdLine@2
   displayName: 'Create Installer'
   inputs:
