@@ -78,3 +78,16 @@ steps:
     isDraft: true
     changeLogCompareToRelease: 'lastFullRelease'
     changeLogType: 'commitBased'
+- task: GitHubRelease@1
+  inputs:
+    gitHubConnection: 'GitHub Releases'
+    repositoryName: '$(Build.Repository.Name)'
+    action: 'create'
+    target: '$(NBGV_GitCommitId)'
+    tagSource: 'gitTag'
+    tagPattern: 'v$(NBGV_NuGetPackageVersion)'
+    title: 'v$(NBGV_NuGetPackageVersion)'
+    assets: '$(Build.ArtifactStagingDirectory)/Installer'
+    isDraft: true
+    changeLogCompareToRelease: 'lastFullRelease'
+    changeLogType: 'commitBased'
