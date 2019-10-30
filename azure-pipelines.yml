@@ -56,3 +56,9 @@ steps:
   inputs:
     script: 'Squirrel --releasify=$(Build.ArtifactStagingDirectory)\Milamation.$(NBGV_NuGetPackageVersion).nupkg --releaseDir=$(Build.ArtifactStagingDirectory)\Installer'
     workingDirectory: '$(Build.BinariesDirectory)'
+
+- task: PublishPipelineArtifact@1
+  inputs:
+    targetPath: '$(Build.ArtifactStagingDirectory)\Installer'
+    artifact: 'Installer'
+    publishLocation: 'pipeline'
