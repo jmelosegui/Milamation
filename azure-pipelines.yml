@@ -72,6 +72,7 @@ steps:
     action: 'create'
     target: '$(NBGV_NuGetPackageVersion)'
     tagSource: 'gitTag'
+    tagPattern: 'v$(NBGV_NuGetPackageVersion)'
     title: 'v$(NBGV_NuGetPackageVersion)'
     assets: '$(Build.ArtifactStagingDirectory)/Installer'
     isDraft: true
