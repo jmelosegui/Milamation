@@ -37,10 +37,10 @@ steps:
     command: 'pack'
     packagesToPack: '$(Build.BinariesDirectory)/Milamation.nuspec'
     versioningScheme: 'byEnvVar'
-    versionEnvVar: '$(GitBuildVersionSimple)'
+    versionEnvVar: '$(NBGV_NuGetPackageVersion)'
 
 - task: CmdLine@2
   displayName: 'Create Installer'
   inputs:
-    script: 'Squirrel --releasify=$(Build.ArtifactStagingDirectory)\Milamation.$(GitBuildVersionSimple).nupkg --releaseDir=$(Build.ArtifactStagingDirectory)\Installer'
+    script: 'Squirrel --releasify=$(Build.ArtifactStagingDirectory)\Milamation.$(NBGV_NuGetPackageVersion).nupkg --releaseDir=$(Build.ArtifactStagingDirectory)\Installer'
     workingDirectory: '$(Build.BinariesDirectory)'
