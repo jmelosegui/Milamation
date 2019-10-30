@@ -17,6 +17,7 @@ steps:
     versionSpec: 5.2.0
 
 - task: NuGetCommand@2
+  displayName: 'Nuget Restore'
   inputs:
     command: 'restore'
     restoreSolution: '$(solution)'
@@ -24,8 +25,22 @@ steps:
     nugetConfigPath: '$(Build.SourcesDirectory)/nuget.config'    
 
 - task: VSBuild@1
+  displayName: 'Build Solution'
   inputs:
     solution: 
-    msbuildArgs: '/t:Publish /p:OutDir=$(Build.ArtifactStagingDirectory)'
+    msbuildArgs: '/t:Publish /p:OutDir=$(Build.BinariesDirectory)'
     platform: '$(BuildPlatform)'
     configuration: '$(BuildConfiguration)'
+
+- task: NuGetCommand@2
+  displayName: 'Create Nuget Package'
+  inputs:
+    command: 'pack'
+    packagesToPack: '$(Build.BinariesDirectory)/Milamation.nuspec'
+    versioningScheme: 'byBuildNumber'
+
+- task: CmdLine@2
+  displayName: 'Create Installer'
+  inputs:
+    script: 'Squirrel --releasify=Milamation.$(Build.BuildNumber).nupkg --releaseDir=$(Build.ArtifactStagingDirectory)'
+    workingDirectory: '$(Build.BinariesDirectory)'
