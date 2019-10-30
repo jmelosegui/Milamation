@@ -22,16 +22,6 @@ steps:
     restoreSolution: '$(solution)'
     feedsToUse: 'config'
     nugetConfigPath: '$(Build.SourcesDirectory)/nuget.config'    
-
-- task: DotNetCoreCLI@2  
-  inputs:
-    command: custom
-    custom: tool
-    arguments: install --tool-path . nbgv
-  displayName: Install NBGV tool
-
-- script: nbgv cloud
-  displayName: Set Version
   
 - task: VSBuild@1
   displayName: 'Build Solution'
