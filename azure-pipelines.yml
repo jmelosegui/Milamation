@@ -52,6 +52,7 @@ steps:
         Write-Host "##vso[task.setvariable variable=NBGV_NuGetPackageVersion;]$($version.NuGetPackageVersion)"
 
 - task: DownloadGitHubRelease@0
+  displayName: 'Download Latest GitHub Release'
   inputs:
     connection: 'GitHub Releases'
     userRepository: 'jmelosegui/Milamation'
@@ -66,19 +67,7 @@ steps:
     workingDirectory: '$(Build.BinariesDirectory)'
 
 - task: GitHubRelease@1
-  inputs:
-    gitHubConnection: 'GitHub Releases'
-    repositoryName: '$(Build.Repository.Name)'
-    action: 'create'
-    target: '$(NBGV_NuGetPackageVersion)'
-    tagSource: 'gitTag'
-    tagPattern: 'v$(NBGV_NuGetPackageVersion)'
-    title: 'v$(NBGV_NuGetPackageVersion)'
-    assets: '$(Build.ArtifactStagingDirectory)/Installer'
-    isDraft: true
-    changeLogCompareToRelease: 'lastFullRelease'
-    changeLogType: 'commitBased'
-- task: GitHubRelease@1
+  displayName: 'Publish GitHub Release'
   inputs:
     gitHubConnection: 'GitHub Releases'
     repositoryName: '$(Build.Repository.Name)'
