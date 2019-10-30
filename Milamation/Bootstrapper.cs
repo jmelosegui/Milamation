@@ -10,6 +10,7 @@ using Milamation.ValidationRules;
 using HarvestClient;
 using System.Security.Principal;
 using NLog.Extensions.Logging;
+using System.Windows.Threading;
 
 namespace Milamation
 {
@@ -35,7 +36,7 @@ namespace Milamation
         }
 
         protected override void OnStartup(object sender, StartupEventArgs e)
-        {
+        {   
             DisplayRootViewFor<ShellViewModel>();
         }
 
@@ -60,6 +61,12 @@ namespace Milamation
             var settings = new AppConfiguration();
             configuration.Bind(settings);
             return settings;
+        }
+
+        protected override void OnUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)
+        {
+            var logger = serviceProvider.GetService<ILogger<Bootstrapper>>();
+            logger.LogError(e.Exception, "UnhandledException");
         }
 
         private static IServiceProvider BuildServiceProvider(AppConfiguration settings)
