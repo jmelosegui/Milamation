@@ -46,7 +46,6 @@ steps:
     targetType: 'inline'
     script:
         $version = .\nbgv get-version -f json | ConvertFrom-Json
-        $nuspecs = gci .\NuSpecs\*.nuspec         
         nuget.exe pack $(Build.BinariesDirectory)\Milamation.nuspec -NonInteractive -OutputDirectory $(Build.ArtifactStagingDirectory) -Version $($version.NuGetPackageVersion) -Properties Configuration=Release -Verbosity Detailed        
         Write-Host "##vso[task.setvariable variable=NBGV_NuGetPackageVersion;]$($version.NuGetPackageVersion)"
         
