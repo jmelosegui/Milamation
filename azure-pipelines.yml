@@ -1,8 +1,7 @@
 trigger:
 - master
 
-pool:
-  vmImage: 'windows-latest'
+pool: 'Default'
 
 variables:
   solution: '$(Build.SourcesDirectory)/HarvestReport.sln'
@@ -17,15 +16,64 @@ steps:
     versionSpec: 5.2.0
 
 - task: NuGetCommand@2
+  displayName: 'Nuget Restore'
   inputs:
     command: 'restore'
     restoreSolution: '$(solution)'
     feedsToUse: 'config'
     nugetConfigPath: '$(Build.SourcesDirectory)/nuget.config'    
+  
+- task: DotNetCoreCLI@2  
+  inputs:
+    command: custom
+    custom: tool
+    arguments: install --tool-path . nbgv
+  displayName: Install NBGV tool
+
+- script: nbgv cloud
+  displayName: Set Version
 
 - task: VSBuild@1
+  displayName: 'Build Solution'
   inputs:
     solution: 
-    msbuildArgs: '/t:Publish /p:OutDir=$(Build.ArtifactStagingDirectory)'
+    msbuildArgs: '/t:Publish /p:OutDir=$(Build.BinariesDirectory)'
     platform: '$(BuildPlatform)'
     configuration: '$(BuildConfiguration)'
+
+- task: PowerShell@2
+  inputs:
+    targetType: 'inline'
+    script:
+        $version = .\nbgv get-version -f json | ConvertFrom-Json
+
+        nuget.exe pack $(Build.BinariesDirectory)\Milamation.nuspec -NonInteractive -OutputDirectory $(Build.ArtifactStagingDirectory) -Version $($version.NuGetPackageVersion) -Properties Configuration=Release -Verbosity Detailed        
+        
+        Write-Host "##vso[task.setvariable variable=NBGV_NuGetPackageVersion;]$($version.NuGetPackageVersion)"
+
+- task: DownloadGitHubRelease@0
+  inputs:
+    connection: 'GitHub Releases'
+    userRepository: 'jmelosegui/Milamation'
+    defaultVersionType: 'latest'
+    downloadPath: '$(System.ArtifactsDirectory)\Installer'
+
+
+- task: CmdLine@2
+  displayName: 'Create Installer'
+  inputs:
+    script: 'Squirrel --releasify=$(Build.ArtifactStagingDirectory)\Milamation.$(NBGV_NuGetPackageVersion).nupkg --releaseDir=$(Build.ArtifactStagingDirectory)\Installer'
+    workingDirectory: '$(Build.BinariesDirectory)'
+
+- task: GitHubRelease@1
+  inputs:
+    gitHubConnection: 'GitHub Releases'
+    repositoryName: '$(Build.Repository.Name)'
+    action: 'create'
+    target: '$(NBGV_NuGetPackageVersion)'
+    tagSource: 'gitTag'
+    title: 'v$(NBGV_NuGetPackageVersion)'
+    assets: '$(Build.ArtifactStagingDirectory)/Installer'
+    isDraft: true
+    changeLogCompareToRelease: 'lastFullRelease'
+    changeLogType: 'commitBased'
