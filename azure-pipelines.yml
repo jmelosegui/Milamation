@@ -2,7 +2,7 @@ trigger:
 - master
 
 pool:
-  vmImage: 'windows-latest'
+  name: Default
 
 variables:
   solution: '$(Build.SourcesDirectory)/HarvestReport.sln'
