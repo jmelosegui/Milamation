@@ -41,5 +41,5 @@ steps:
 - task: CmdLine@2
   displayName: 'Create Installer'
   inputs:
-    script: 'Squirrel --releasify=Milamation.$(Build.BuildNumber).nupkg --releaseDir=$(Build.ArtifactStagingDirectory)'
+    script: 'Squirrel --releasify=$(Build.ArtifactStagingDirectory)\Milamation.$(Build.BuildNumber).nupkg --releaseDir=$(Build.ArtifactStagingDirectory)\Installer'
     workingDirectory: '$(Build.BinariesDirectory)'
