@@ -1,8 +1,7 @@
 trigger:
 - master
 
-pool:
-  name: Default
+pool: 'Default'
 
 variables:
   solution: '$(Build.SourcesDirectory)/HarvestReport.sln'
