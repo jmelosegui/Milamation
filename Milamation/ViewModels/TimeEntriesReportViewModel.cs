@@ -201,9 +201,18 @@ namespace Milamation.ViewModels
                 TimeEntriesReport.AddEntries(timeEntries, 2 /*Asuming the header is present*/);
             }
 
-            TimeEntriesReport.FormatExcel(timeEntries.Count());
+            var timeentryCount = timeEntries.Count();
 
-            TimeEntriesReport.OpenReport();
+            if (timeentryCount > 0)
+            {
+                TimeEntriesReport.FormatExcel(timeentryCount);
+
+                TimeEntriesReport.OpenReport();
+            }
+            else
+            {
+                MessageBox.Show("Cannot find any time entry for the provided parameters.", "Information", MessageBoxButton.OK);
+            }            
 
             IsBusy = false;
         }
