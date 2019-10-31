@@ -17,6 +17,16 @@ namespace Milamation.ValidationRules
                 return "Please update the task to Meetings";
             }
 
+            if(timesheetEntry.Task?.Name?.IndexOf("meeting", StringComparison.InvariantCultureIgnoreCase) >= 0
+                && (
+                    timesheetEntry.Notes?.IndexOf("Standup", StringComparison.InvariantCultureIgnoreCase) >= 0 
+                    || timesheetEntry.Notes?.IndexOf("Stand-up", StringComparison.InvariantCultureIgnoreCase) >= 0
+                    || timesheetEntry.Notes?.IndexOf("Stand up", StringComparison.InvariantCultureIgnoreCase) >= 0
+                  ))
+            {
+                return "Please replace the word Standup to Scrum";
+            }
+
             return null;
         }
     }

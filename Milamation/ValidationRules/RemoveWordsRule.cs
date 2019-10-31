@@ -12,6 +12,8 @@ namespace Milamation.ValidationRules
 
         public List<string> Words => new List<string>()
         {
+            { "Product Backlog Item" },
+            { "Task" },            
             { "PBI" },
             { "Bug" }
         };

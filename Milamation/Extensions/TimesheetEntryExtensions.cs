@@ -10,7 +10,7 @@ namespace Milamation.Extensions
     {
         public static  void ApplyValidationRules(this TimesheetEntry timesheetEntry, IEnumerable<Milamation.ValidationRules.Rule> rules)
         {
-            foreach (var rule in rules.OrderBy(i => i.Priority))
+            foreach (var rule in rules.Where(r => r.IsEnabled).OrderBy(i => i.Priority))
             {
                 string validationError = rule.Validate(timesheetEntry);
                 if (!string.IsNullOrEmpty(validationError))
