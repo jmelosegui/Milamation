@@ -6,17 +6,16 @@ using System.Text.RegularExpressions;
 
 namespace Milamation.ValidationRules
 {
-    public class NoDescriptionRule : Rule
+    public class NeedProperTaskRule : Rule
     {
         public override int Priority => 2;
 
         public override string Validate(TimesheetEntry timesheetEntry)
         {
-            string pattern = @"\.*[a-zA-Z]+\.*";
-            var matches = Regex.Matches(timesheetEntry.Notes, pattern);
-            if (matches.Count == 0)
+            if (!TasksRequiringPBI.Contains(timesheetEntry.Task.Name)
+               && timesheetEntry.HasPBI)
             {
-                return "add description of work done";
+                return "Please update the task name (i.e. Software Development)";
             }
 
             return null;

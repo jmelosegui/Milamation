@@ -76,6 +76,6 @@ steps:
     tagSource: 'userSpecifiedTag'
     tag: 'v$(NBGV_NuGetPackageVersion)'
     title: 'v$(NBGV_NuGetPackageVersion)'
-    assets: '$(Build.ArtifactStagingDirectory)\Installer\*.*'
+    assets: '$(Build.ArtifactStagingDirectory)\Installer\*'
     changeLogCompareToRelease: 'lastFullRelease'
     changeLogType: 'commitBased'
