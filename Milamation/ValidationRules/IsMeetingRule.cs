@@ -27,6 +27,12 @@ namespace Milamation.ValidationRules
                 return "Please replace the word Standup to Scrum";
             }
 
+            if (timesheetEntry.Task?.Name?.IndexOf("meeting", StringComparison.InvariantCultureIgnoreCase) >= 0
+                && timesheetEntry.PBI?.Contains("Scrum") != true)
+            {
+                return "Please add the word Scrum";
+            }
+
             return null;
         }
     }
