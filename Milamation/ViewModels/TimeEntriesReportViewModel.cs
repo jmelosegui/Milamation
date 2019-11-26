@@ -290,11 +290,17 @@ namespace Milamation.ViewModels
 
             try
             {
-                var supportedClients = new int[] { 32315, 8090413 };
+                // TODO: I should have this through some sort of configuration.
+                var supportedClients = new int[] 
+                { 
+                    32315, /* PricewaterhouseCoopers */
+                    8090413, /* PwC Lux */
+                    25558, /* Arrow Digital, LLC */
+                };
 
                 foreach (var clientId in supportedClients)
                 {
-                    Client client = await harvestClient.Clients.GetById(clientId /*PwC Audit*/);
+                    Client client = await harvestClient.Clients.GetById(clientId);
 
                     if (client != null)
                     {
