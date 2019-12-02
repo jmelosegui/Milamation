@@ -49,28 +49,29 @@ namespace Milamation.Extensions
 
         public static void CompletePBIColumn(this TimesheetEntry timesheetEntry)
         {
+            if (!string.IsNullOrEmpty(timesheetEntry.Notes))
+            {
+                string pattern = @"^\s*(?<PBI>\d+)\.*";
+                var matches = Regex.Matches(timesheetEntry.Notes, pattern);
+                if (matches.Count > 0)
+                {
+                    timesheetEntry.PBI = matches[0].Groups["PBI"].Value;
+                    timesheetEntry.HasPBI = true;
+                    return;
+                }
+            }
+
             if (timesheetEntry.Task?.Name?.IndexOf("planning", StringComparison.InvariantCultureIgnoreCase) >= 0)
             {
                 timesheetEntry.PBI = "Planning";
+                return;
             }
-            else if (timesheetEntry.Notes?.IndexOf("scrum", StringComparison.InvariantCultureIgnoreCase) >= 0)
+
+            if (timesheetEntry.Notes?.IndexOf("scrum", StringComparison.InvariantCultureIgnoreCase) >= 0)
             {
                 timesheetEntry.PBI = "Scrum";
+                return;
             }
-            else
-            {
-                if (!string.IsNullOrEmpty(timesheetEntry.Notes))
-                {
-                    string pattern = @"^\s*(?<PBI>\d+)\.*";
-                    var matches = Regex.Matches(timesheetEntry.Notes, pattern);
-                    if (matches.Count > 0)
-                    {
-                        timesheetEntry.PBI = matches[0].Groups["PBI"].Value;
-                        timesheetEntry.HasPBI = true;
-                    }
-                }                
-            }
-             
         }
     }
 }
