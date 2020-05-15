@@ -3,7 +3,6 @@ using System.Net;
 using Newtonsoft.Json;
 using System.Text.RegularExpressions;
 using RestSharp;
-using HarvestClient.Exceptions;
 
 namespace HarvestClient.Exceptions
 {

@@ -5,18 +5,16 @@ using System.Runtime.CompilerServices;
 
 namespace Milamation.Models
 {
-    public class ProjectModel : INotifyPropertyChanged, IFilterable 
+    public class ClientModel : INotifyPropertyChanged, IFilterable 
     {
         private bool isSelected;
 
-        public ProjectModel()
+        public ClientModel()
         {
-
         }
 
-        public ProjectModel(Project project)
-        {
-            this.Code = project.Code;
+        public ClientModel(Client project)
+        {   
             this.Id = project.Id;
             this.Name = project.Name;
         }
@@ -25,8 +23,6 @@ namespace Milamation.Models
 
 
         public string Name { get; set; }
-
-        public string Code { get; set; }
 
         public bool IsSelected
         {
@@ -42,7 +38,7 @@ namespace Milamation.Models
         {
             get
             {
-                return $"[{Code}] {Name}";
+                return $"[{Id}] {Name}";
             }
         }
 

@@ -18,7 +18,7 @@ namespace HarvestClient.ApiClients
             return await ProcessRequest<Client>($"clients/{id}", Method.GET);
         }
 
-        public async IAsyncEnumerable<Client> List(bool? isActive = true)
+        public async IAsyncEnumerable<Client> ListAsync(bool? isActive = null)
         {
             Dictionary<string, object> parameters = new Dictionary<string, object>();
             int currentPage = 1;
@@ -29,7 +29,7 @@ namespace HarvestClient.ApiClients
 
             var collection = await ProcessRequest<ClientCollectionResponse>("clients", Method.GET, parameters);
 
-            while (collection.TotalPages > currentPage)
+            while (collection.TotalPages >= currentPage)
             {
                 foreach (var client in collection.Clients)
                 {

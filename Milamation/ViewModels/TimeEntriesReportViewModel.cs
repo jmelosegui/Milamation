@@ -26,7 +26,7 @@ namespace Milamation.ViewModels
         private readonly IDictionary<int, User> userCache;
         private readonly IEnumerable<Rule> rules;
         private readonly IPrincipal principal;
-        private Client selectedClient;
+        private ClientModel selectedClient;
         private DateTime? startDate;
         private DateTime? endDate;
 
@@ -40,7 +40,7 @@ namespace Milamation.ViewModels
             //harvestClient = new HarvestRestClient(token, accountId);
             userCache = new Dictionary<int, User>();
 
-            Clients = new BindableCollection<Client>();
+            Clients = new BindableCollection<ClientModel>();
             Projects = new BindableCollection<ProjectModel>();
 
             Projects.CollectionChanged += Projects_CollectionChanged;
@@ -71,7 +71,7 @@ namespace Milamation.ViewModels
             }
         }
 
-        public BindableCollection<Client> Clients { get; }
+        public BindableCollection<ClientModel> Clients { get; }
 
         public BindableCollection<ProjectModel> Projects { get; }
 
@@ -127,7 +127,7 @@ namespace Milamation.ViewModels
                 NotifyOfPropertyChange(() => OnlyMyEntries);
             }
         }
-        public Client SelectedClient
+        public ClientModel SelectedClient
         {
             get { return selectedClient; }
             set
@@ -156,6 +156,45 @@ namespace Milamation.ViewModels
             {
                 return selectedClient != null
                         && Projects.Where(mo => mo.IsSelected).Any();
+            }
+        }
+
+        private string clientFilterText;
+
+        public string ClientFilterText
+        {
+            get { return clientFilterText; }
+            set
+            {
+                clientFilterText = value;
+                NotifyOfPropertyChange(() => ClientFilterText);
+                this.ClientFilter = (client) =>
+                {
+
+                    if (string.IsNullOrEmpty(this.clientFilterText))
+                    {
+                        return true;
+                    }
+
+                    var name = ((IFilterable)client).DisplayName;
+                    if (string.IsNullOrEmpty(name))
+                    {
+                        return false;
+                    }
+
+                    return name.IndexOf(this.ClientFilterText, StringComparison.OrdinalIgnoreCase) >= 0;
+                };
+            }
+        }
+
+        private Predicate<object> clientFilter;
+        public Predicate<object> ClientFilter
+        {
+            get { return this.clientFilter; }
+            private set
+            {
+                this.clientFilter = value;
+                this.NotifyOfPropertyChange(() => ClientFilter);
             }
         }
 
@@ -189,7 +228,11 @@ namespace Milamation.ViewModels
                     userId = tempUserId;
                 }
 
-                await foreach (var entry in harvestClient.Timesheets.ListAsync(selectedClient.Id, project.Id, StartDate, EndDate, userId))
+                var timesheet = harvestClient.Timesheets
+                             .ListAsync(selectedClient.Id, project.Id, StartDate, EndDate, userId)
+                             .OrderByDescending(i => i.SpentDate);
+
+                await foreach (var entry in timesheet)
                 {
                     entry.UserRoles = await GetUserRolesAsync(entry.User.Id);
                     entry.CompletePBIColumn();
@@ -212,7 +255,7 @@ namespace Milamation.ViewModels
             else
             {
                 MessageBox.Show("Cannot find any time entry for the provided parameters.", "Information", MessageBoxButton.OK);
-            }            
+            }
 
             IsBusy = false;
         }
@@ -253,6 +296,9 @@ namespace Milamation.ViewModels
                 case nameof(SelectedClient):
                     await OnClientSelected();
                     break;
+                case nameof(ClientFilter):
+                    OnClientFiltered();
+                    break;
                 // TODO: Remove this hack once I figure out how to always run the OnActivateAsync
                 case nameof(Parent):
                     await OnActivateAsync(CancellationToken.None);
@@ -266,16 +312,18 @@ namespace Milamation.ViewModels
 
             try
             {
-                Projects.Clear();
-                List<Project> tempList = new List<Project>();
-                await foreach (var item in harvestClient.Projects.ListAsync(selectedClient.Id, true))
-                {
-                    tempList.Add(item);
-                }
 
-                foreach (var project in tempList.Select(i => new ProjectModel(i)).OrderBy(i => i.Code))
+                Projects.Clear();
+                if (selectedClient != null)
                 {
-                    Projects.Add(project);
+                    IOrderedAsyncEnumerable<ProjectModel> list = harvestClient.Projects
+                                                                  .ListAsync(selectedClient.Id, true)
+                                                                  .Select(i => new ProjectModel(i))
+                                                                  .OrderBy(i => i.Code);
+                    await foreach (var project in list)
+                    {
+                        Projects.Add(project);
+                    }
                 }
             }
             finally
@@ -284,24 +332,35 @@ namespace Milamation.ViewModels
             }
         }
 
+        private void OnClientFiltered()
+        {
+
+        }
+
         private async Task InternalInitialize()
         {
             IsBusy = true;
 
             try
             {
-                // TODO: I should have this through some sort of configuration.
-                var supportedClients = new int[] 
-                { 
-                    32315, /* PricewaterhouseCoopers */
-                    8090413, /* PwC Lux */
-                    25558, /* Arrow Digital, LLC */
-                };
+                //// TODO: I should have this through some sort of configuration.
+                //var clients = new Client[]
+                //{
+                //    new Client
+                //    {
+                //        Id = 32315,
+                //        Name = "PricewaterhouseCoopers"
+                //    } , 
+                //    //8090413, /* PwC Lux */
+                //    //25558, /* Arrow Digital, LLC */
+                //};
 
-                foreach (var clientId in supportedClients)
+                var clients = harvestClient.Clients
+                                           .ListAsync(isActive: true)
+                                           .OrderBy(c => c.Id)
+                                           .Select(c => new ClientModel(c));
+                await foreach (var client in clients)
                 {
-                    Client client = await harvestClient.Clients.GetById(clientId);
-
                     if (client != null)
                     {
                         Clients.Add(client);

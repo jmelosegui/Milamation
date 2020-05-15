@@ -1,10 +1,9 @@
 ﻿using Caliburn.Micro;
 using Microsoft.Extensions.Logging;
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows;
 
 namespace Milamation.ViewModels
 {
@@ -47,6 +46,9 @@ namespace Milamation.ViewModels
                     logger.LogInformation($"Updater will fetch version {result.Value.FutureVersion}");
                     await appUpdater.UpdateAsync(CancellationToken.None);
                     NewVersionAvailable = true;
+
+                    MessageBox.Show("There is a new version available. Please restart the application to update.", "Information", MessageBoxButton.OK);
+
                     logger.LogInformation("Update finished, restart required");
                 }
                 else

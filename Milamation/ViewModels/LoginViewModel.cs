@@ -1,5 +1,4 @@
-﻿using Caliburn.Micro;
-using HarvestClient;
+﻿using HarvestClient;
 using HarvestClient.Model;
 using Microsoft.Extensions.Logging;
 using System;

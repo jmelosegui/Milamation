@@ -4,6 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:busyIndicator="clr-namespace:Milamation.Controls.BusyIndicator"
+             xmlns:extensions="clr-namespace:Milamation.Infrastructure"
              mc:Ignorable="d" d:DesignHeight="400" d:DesignWidth="400">
     <busyIndicator:BusyIndicator x:Name="BusyIndicator" Style="{DynamicResource BusyIndicator}" IsBusy="{Binding IsBusy}">
         <Grid>
@@ -16,7 +17,6 @@
                 <ColumnDefinition Width="20"/>
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
-                <RowDefinition Height="20"/>
                 <RowDefinition Height="auto"/>
                 <RowDefinition Height="5"/>
                 <RowDefinition Height="auto"/>
@@ -30,30 +30,56 @@
                 <RowDefinition Height="20"/>
 
             </Grid.RowDefinitions>
+            
+            <!--<ComboBox Name="Clients" Grid.Column="2" Grid.ColumnSpan="3" Grid.Row="1" SelectedItem="{Binding Path=SelectedClient}" DisplayMemberPath="Name"/>-->
+            <Label Content="StartDate" Grid.Column="1" Grid.Row="2" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+            <DatePicker Name="StartDate" Grid.Column="2" Grid.Row="2"/>
+            <Label Content="EndDate" Grid.Column="3" Grid.Row="2" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+            <DatePicker Name="EndDate" Grid.Column="4" Grid.Row="2"/>
+            
+            <Grid Grid.Column="1" Grid.ColumnSpan="4" Grid.Row="5">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="2*"/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="20"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                <Label Content="Clients" Grid.Column="0" Grid.Row="0" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+                <Label Content="Projects" Grid.Column="1" Grid.Row="0" HorizontalAlignment="Left" VerticalAlignment="Top" />
+                <TextBox Name="ClientFilterText" Grid.Column="0" Grid.Row="1"/>
+                <ListBox x:Name="Clients" Grid.Column="0" Grid.Row="2" extensions:Filter.By="{Binding ClientFilter}" SelectedItem="{Binding Path=SelectedClient}" SelectionMode="Single" ItemsSource="{Binding Clients, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True}">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <Label Content="{Binding DisplayName}"/>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                    <ListBox.ItemContainerStyle>
+                        <Style TargetType="{x:Type ListBoxItem}" BasedOn="{StaticResource {x:Type ListBoxItem}}">
+                            <Setter Property="IsSelected" Value="{Binding IsSelected, Mode=TwoWay}" />
+                        </Style>
+                    </ListBox.ItemContainerStyle>
+                </ListBox>
 
-            <Label Content="Clients" Grid.Column="1" Grid.Row="1" HorizontalAlignment="Left" VerticalAlignment="Top"/>
-            <ComboBox Name="Clients" Grid.Column="2" Grid.ColumnSpan="3" Grid.Row="1" SelectedItem="{Binding Path=SelectedClient}" DisplayMemberPath="Name"/>
-            <Label Content="StartDate" Grid.Column="1" Grid.Row="3" HorizontalAlignment="Left" VerticalAlignment="Top"/>
-            <DatePicker Name="StartDate" Grid.Column="2" Grid.Row="3"/>
-            <Label Content="EndDate" Grid.Column="3" Grid.Row="3" HorizontalAlignment="Left" VerticalAlignment="Top"/>
-            <DatePicker Name="EndDate" Grid.Column="4" Grid.Row="3"/>
-            <Label Content="Projects" Grid.Column="1" Grid.Row="4" HorizontalAlignment="Left" VerticalAlignment="Top" />
-            <ListBox x:Name="Projects" Grid.Column="1" Grid.ColumnSpan="4" Grid.Row="6"  SelectionMode="Extended" ItemsSource="{Binding Projects, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True}">
-                <ListBox.ItemTemplate>
-                    <DataTemplate>
-                        <Label Content="{Binding DisplayName}"/>
-                    </DataTemplate>
-                </ListBox.ItemTemplate>
-                <ListBox.ItemContainerStyle>
-                    <Style TargetType="{x:Type ListBoxItem}" BasedOn="{StaticResource {x:Type ListBoxItem}}">
-                        <Setter Property="IsSelected" Value="{Binding IsSelected, Mode=TwoWay}" />
-                    </Style>
-                </ListBox.ItemContainerStyle>
-            </ListBox>
-            <CheckBox x:Name="OnlyMyEntries" Grid.Column="1" Grid.ColumnSpan="3" Grid.Row="9" Content="Export only my entries" />
-            <Button Name="Logout" Grid.Column="1" Grid.Row="10" Content="Logout" Height="25" Width="70" HorizontalAlignment="Left"/>
-            <Button Name="ExportTimeEntries" Grid.Column="2" Grid.Row="10" Margin="5" Content="Export Time Entries" Height="25" Width="134" HorizontalAlignment="Left"/>
-            <Label Name="Version" Grid.Column="4" Grid.Row="10" HorizontalAlignment="Right" />
+                <ListBox x:Name="Projects" Grid.Column="1" Grid.Row="2" SelectionMode="Extended" ItemsSource="{Binding Projects, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True}">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <Label Content="{Binding DisplayName}"/>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                    <ListBox.ItemContainerStyle>
+                        <Style TargetType="{x:Type ListBoxItem}" BasedOn="{StaticResource {x:Type ListBoxItem}}">
+                            <Setter Property="IsSelected" Value="{Binding IsSelected, Mode=TwoWay}" />
+                        </Style>
+                    </ListBox.ItemContainerStyle>
+                </ListBox>
+            </Grid>
+            <CheckBox x:Name="OnlyMyEntries" Grid.Column="1" Grid.ColumnSpan="3" Grid.Row="8" Content="Export only my entries" />
+            <Button Name="Logout" Grid.Column="1" Grid.Row="9" Content="Logout" Height="25" Width="70" HorizontalAlignment="Left"/>
+            <Button Name="ExportTimeEntries" Grid.Column="2" Grid.Row="9" Margin="5" Content="Export Time Entries" Height="25" Width="134" HorizontalAlignment="Left"/>
+            <Label Name="Version" Grid.Column="4" Grid.Row="9" HorizontalAlignment="Right" />
         </Grid>
     </busyIndicator:BusyIndicator>
 </UserControl>

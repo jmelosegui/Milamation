@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using HarvestClient.Model;
+﻿using HarvestClient.Model;
 
 namespace Milamation.ValidationRules
 {
