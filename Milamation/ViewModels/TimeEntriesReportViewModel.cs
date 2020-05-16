@@ -229,8 +229,7 @@ namespace Milamation.ViewModels
                 }
 
                 var timesheet = harvestClient.Timesheets
-                             .ListAsync(selectedClient.Id, project.Id, StartDate, EndDate, userId)
-                             .OrderByDescending(i => i.SpentDate);
+                             .ListAsync(selectedClient.Id, project.Id, StartDate, EndDate, userId);
 
                 await foreach (var entry in timesheet)
                 {
@@ -240,9 +239,9 @@ namespace Milamation.ViewModels
                     entry.ApplyValidationRules(rules);
                     timeEntries.Add(entry);
                 }
-
-                TimeEntriesReport.AddEntries(timeEntries, 2 /*Asuming the header is present*/);
             }
+
+            TimeEntriesReport.AddEntries(timeEntries.OrderByDescending(i => i.SpentDate), 2 /*Asuming the header is present*/);
 
             var timeentryCount = timeEntries.Count();
 

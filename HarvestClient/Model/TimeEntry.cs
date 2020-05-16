@@ -1,9 +1,11 @@
 ﻿using Newtonsoft.Json;
 using System;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Diagnostics;
 
 namespace HarvestClient.Model
 {
+    [DebuggerDisplay("{SpentDate}, {Notes}")]
     public class TimesheetEntry
     {
         [JsonProperty("id")]
