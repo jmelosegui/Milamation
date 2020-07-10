@@ -1,4 +1,5 @@
 ﻿using HarvestClient.Model;
+using System.Linq;
 
 namespace Milamation.ValidationRules
 {
@@ -12,7 +13,7 @@ namespace Milamation.ValidationRules
                 && !timesheetEntry.HasPBI
                 && (
                      TasksRequiringPBI.Contains(timesheetEntry.Task?.Name)
-                     && ProjectsRequiringPBI.Contains(timesheetEntry.Project?.Name)
+                     && ProjectsRequiringPBI.Any(p => timesheetEntry.Project?.Name.StartsWith(p) == true)
                   )
                 )
             {

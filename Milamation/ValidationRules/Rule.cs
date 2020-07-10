@@ -24,6 +24,7 @@ namespace Milamation.ValidationRules
 
         public virtual List<string> TasksRequiringPBI => new List<string>()
         {
+            { "Infrastructure" },
             { "Software Development" },
             { "QA" },
             { "UX Design" },
